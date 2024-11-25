@@ -8,28 +8,24 @@ namespace ADOConnect
         {
             string connectionString = "Server=MATT\\MSSQLSERVER01;Database=Northwind;Trusted_Connection=True;TrustServerCertificate=True";
 
+            string insertQuery = "INSERT INTO Products (ProductName, UnitPrice, UnitsInStock) VALUES (@ProductName, @UnitPrice, @UnitsInStock)";
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT ProductID, ProductName, UnitPrice FROM Products";
-
-                SqlCommand command = new SqlCommand(query, connection);
+                SqlCommand command = new SqlCommand(insertQuery, connection);
+                command.Parameters.AddWithValue("@ProductName", "New Product");
+                command.Parameters.AddWithValue("@UnitPrice", 15.00);
+                command.Parameters.AddWithValue("@UnitsInStock", 50);
 
                 try
                 {
                     connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        Console.WriteLine("ProductID\tProductName\t\tUnitPrice");
-
-                        while (reader.Read())
-                        {
-                            Console.WriteLine($"{reader["ProductID"]}\t{reader["ProductName"]}\t{reader["UnitPrice"]}");
-                        }
-                    }
+                    int rowsAffected = command.ExecuteNonQuery();
+                    Console.WriteLine($"{rowsAffected} fila(s) insertada(s)");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Erorr: {ex.Message}");
                 }
             }
         }
